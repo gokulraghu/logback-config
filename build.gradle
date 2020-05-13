@@ -1,0 +1,72 @@
+plugins {
+    id "net.ltgt.apt-eclipse" version "0.21"
+    id "com.github.johnrengelman.shadow" version "5.2.0"
+    id "application"
+}
+
+
+
+version "0.1"
+group "com.helloworld.sample"
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    // for dependencies that are needed for development only
+    developmentOnly 
+}
+
+apply plugin: 'java'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+ext {
+
+    micronautDataVersion = "1.0.0"
+    micronautVersion = "1.2.9"
+    
+    
+}
+
+
+dependencies {
+    annotationProcessor platform("io.micronaut:micronaut-bom:$micronautVersion")
+	implementation "io.micronaut:micronaut-discovery-client"
+    implementation platform("io.micronaut:micronaut-bom:$micronautVersion")
+    implementation "io.micronaut:micronaut-http-server-netty"
+    implementation "io.micronaut:micronaut-http-client"
+    
+    //Logging Dependencies
+    implementation "net.logstash.logback:logstash-logback-encoder:5.0"
+    runtimeOnly "ch.qos.logback:logback-classic:1.2.3"
+
+}
+
+test.classpath += configurations.developmentOnly
+
+mainClassName = "com.helloworld.sample.Application"
+
+
+tasks.withType(JavaCompile){
+    options.encoding = "UTF-8"
+    
+}
+
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+run.classpath += configurations.developmentOnly
+run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1', '-Dcom.sun.management.jmxremote', '-Dmicronaut.environments=dev')
+
+
+tasks.withType(JavaExec) {
+                             if (System.getProperty('DEBUG', 'false') == 'true') {
+                                           jvmArgs '-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=9099'
+                             }
+}
+
+

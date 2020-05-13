@@ -1,0 +1,10 @@
+micronaut:
+  application:
+    name: sample-service
+  config-client:
+    enabled: true
+spring:
+  cloud:
+    config:
+      enabled: true #enabling the cloud configuration
+      uri: #config-server-uri
